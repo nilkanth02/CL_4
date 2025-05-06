@@ -1,0 +1,8 @@
+Online Sales 
+
+ODataFeed- https://services.odata.org/V3/Northwind/Northwind.svc/
+
+CSV- https://www.kaggle.com/datasets/samruddhi4040/online-sales-data
+
+Excel- https://www.kaggle.com/datasets/bhavanajoshij/sales-dashboard-in-microsoft-excel
+
