@@ -1,21 +1,30 @@
-// just change the names as per the requirements 
-javac -classpath `hadoop classpath` -d classes WordCount.java CharCount.java
-javac -classpath "%HADOOP_CP%" -d classes WordCount.java CharCount.java
+:: 1. Create output directories for .class files
+mkdir classes
 
-jar -cvf countprograms.jar -C classes/ .
+:: 2. Build the Hadoop CLASSPATH env var (assuming HADOOP_HOME is set)
+set HADOOP_CP=%HADOOP_HOME%\share\hadoop\common\*;^
+%HADOOP_HOME%\share\hadoop\common\lib\*;^
+%HADOOP_HOME%\share\hadoop\hdfs\*;^
+%HADOOP_HOME%\share\hadoop\mapreduce\*;^
+%HADOOP_HOME%\share\hadoop\yarn\*
 
-hdfs dfs -mkdir -p /new
-hdfs dfs -put input.txt /new/
+:: 3. Compile your Java source into classes/
+javac -classpath "%HADOOP_CP%" -d classes WordCount.java
 
-hadoop jar countprograms.jar WordCount /new /output_wordcount
-hadoop jar countprograms.jar CharCount /new /output_charcount
+:: 4. Package those classes into a JAR
+jar -cvf wordcount.jar -C classes .
 
-hdfs dfs -cat /output_wordcount/part-r-00000
-hdfs dfs -cat /output_charcount/part-r-00000
+:: 5. (Re-)create your HDFS input directory, if needed
+hdfs dfs -rm -r -skipTrash /new1
+hdfs dfs -mkdir -p /new1
+
+:: 6. Push your local input.txt into HDFS
+hdfs dfs -put -f input.txt /new1/
+
+:: 7. Run your WordCount job
+hadoop jar wordcount.jar WordCount /new1 /new1_output
+
+:: 8. Inspect the results
+hdfs dfs -cat /new1_output/part-r-00000
 
 set HADOOP_CP=%HADOOP_HOME%\share\hadoop\common\*;%HADOOP_HOME%\share\hadoop\common\lib\*;%HADOOP_HOME%\share\hadoop\hdfs\*;%HADOOP_HOME%\share\hadoop\mapreduce\*;%HADOOP_HOME%\share\hadoop\yarn\*
-
-
-to remove output 
-hdfs dfs -rm -r /output_wordcount
-hdfs dfs -rm -r /output_charcount
