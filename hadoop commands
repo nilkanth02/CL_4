@@ -1,0 +1,21 @@
+// just change the names as per the requirements 
+javac -classpath `hadoop classpath` -d classes WordCount.java CharCount.java
+javac -classpath "%HADOOP_CP%" -d classes WordCount.java CharCount.java
+
+jar -cvf countprograms.jar -C classes/ .
+
+hdfs dfs -mkdir -p /new
+hdfs dfs -put input.txt /new/
+
+hadoop jar countprograms.jar WordCount /new /output_wordcount
+hadoop jar countprograms.jar CharCount /new /output_charcount
+
+hdfs dfs -cat /output_wordcount/part-r-00000
+hdfs dfs -cat /output_charcount/part-r-00000
+
+set HADOOP_CP=%HADOOP_HOME%\share\hadoop\common\*;%HADOOP_HOME%\share\hadoop\common\lib\*;%HADOOP_HOME%\share\hadoop\hdfs\*;%HADOOP_HOME%\share\hadoop\mapreduce\*;%HADOOP_HOME%\share\hadoop\yarn\*
+
+
+to remove output 
+hdfs dfs -rm -r /output_wordcount
+hdfs dfs -rm -r /output_charcount
