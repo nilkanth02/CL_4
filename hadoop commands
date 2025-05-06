@@ -2,11 +2,12 @@
 mkdir classes
 
 :: 2. Build the Hadoop CLASSPATH env var (assuming HADOOP_HOME is set)
-set HADOOP_CP=%HADOOP_HOME%\share\hadoop\common\*;^
-%HADOOP_HOME%\share\hadoop\common\lib\*;^
-%HADOOP_HOME%\share\hadoop\hdfs\*;^
-%HADOOP_HOME%\share\hadoop\mapreduce\*;^
-%HADOOP_HOME%\share\hadoop\yarn\*
+hadoop classpath > hadoop_cp.txt
+type hadoop_cp.txt
+
+set /p HADOOP_CP=<hadoop_cp.txt
+echo %HADOOP_CP%
+
 
 :: 3. Compile your Java source into classes/
 javac -classpath "%HADOOP_CP%" -d classes WordCount.java
@@ -22,6 +23,8 @@ hdfs dfs -mkdir -p /new1
 hdfs dfs -put -f input.txt /new1/
 
 :: 7. Run your WordCount job
+hadoop jar wordcount.jar WordCount /new1 /new1_output hadoop
+
 hadoop jar wordcount.jar WordCount /new1 /new1_output
 
 :: 8. Inspect the results
